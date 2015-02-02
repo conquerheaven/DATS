@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+<constant name="struts.objectFactory" value="spring" />
+	<package name="default" extends="struts-default">
+	
+		<!-- ****************INTERCEPTOR******************* -->
+		
+		<interceptors>
+			<interceptor name="myinterceptor" class="myInterceptor"></interceptor>
+		</interceptors>
+	
+		<!-- ******************LOG************************* -->
+		<action name="Login" class="loginActoin" method="login">
+			<result name="success">/home.jsp</result>
+			<result name="error">/home.jsp</result>
+		</action>
+		<action name="logout" class="loginActoin" method="logout">
+			<result name="success">/home.jsp</result>
+		</action>
+		<!-- *********************************************** -->
+		
+		<!-- ******************Regist*********************** -->
+		<action name="Register" class="registerAction">
+			<result name="success">/home.jsp</result>
+			<result name="error">/regist.jsp</result>
+			<result name="input">/regist.jsp</result>
+		</action>
+		<!-- *********************************************** -->
+		
+		<!-- ******************Solution********************* -->
+		<action name="getSolution" class="solutionAction">
+			<result name="success">/solution.jsp</result>
+			<result name="error">/home.jsp</result>
+		</action>
+		<!-- *********************************************** -->
+		
+		<!-- ******************Submit*********************** -->
+		<action name="Submit" class="submitAction">
+			<result name="success" type="redirectAction">
+				<param name="actionName">getSolution</param>  
+			</result>
+			<result name="error" type="redirect">/home.jsp</result>
+			<result name="input">/submit.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<interceptor-ref name="myinterceptor"></interceptor-ref>
+		</action>
+		<!-- *********************************************** -->
+		
+		<!-- *******************Search********************** -->
+		<action name="Search" class="searchAction">
+			<result name="success">/problemList.jsp</result>
+			<result name="error">/home.jsp</result>
+		</action>
+		<!-- *********************************************** -->
+		
+		<!-- *******************Discuss********************* -->
+		<action name="Content" class="discussAction" method="getContent">
+			<result name="success">/discuss.jsp</result>
+		</action>
+		<action name="Discuss" class="discussAction" method="AddDiscuss">
+			<result name="success" type="redirectAction">Content</result>
+			<result name="error">/home.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<interceptor-ref name="myinterceptor"></interceptor-ref>
+		</action>
+		<action name="Reply" class="discussAction" method="AddReply">
+			<result name="success" type="redirectAction">Content</result>
+			<result name="error">/home.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<interceptor-ref name="myinterceptor"></interceptor-ref>
+		</action>
+		<!-- *********************************************** -->
+	</package>
+</struts>    

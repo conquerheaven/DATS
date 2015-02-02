@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+		<property name="url">
+		    <value>jdbc:mysql://localhost:3306/acm</value>
+		</property>
+		<property name="username">
+		    <value>root</value>
+		</property>
+		<property name="password">
+		    <value>root</value>
+		</property>
+	</bean>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>org/model/Problem.hbm.xml</value>
+				<value>org/model/Userinfo.hbm.xml</value>
+				<value>org/model/Solution.hbm.xml</value>
+				<value>org/model/Discuss.hbm.xml</value>
+				<value>org/model/Reply.hbm.xml</value></list>
+		</property></bean>
+				<!-- **********Dao********* -->
+				
+	<bean id="userdao" class="org.dao.imp.Userdao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="solutiondao" class="org.dao.imp.Solutiondao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="problemdao" class="org.dao.imp.problemDao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="discussdao" class="org.dao.imp.Discussdao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="replydao" class="org.dao.imp.Replydao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- *************************************************************** -->
+	
+				<!-- **************SERVICE************ -->
+				
+	<bean id="loginservice" class="org.service.imp.Loginservice">
+		<property name="usd" ref="userdao"></property>
+	</bean>
+	<bean id="registservice" class="org.service.imp.Registservice">
+		<property name="usd" ref="userdao"></property>
+	</bean>
+	<bean id="solutionservice" class="org.service.imp.Solutionservice">
+		<property name="std" ref="solutiondao"></property>
+	</bean>
+	<bean id="submitservice" class="org.service.imp.Submitservice">
+		<property name="mthread" ref="mainthread"></property>
+		<property name="std" ref="solutiondao"></property>
+	</bean>
+	<bean id="searchservice" class="org.service.imp.searchService">
+		<property name="pbd" ref="problemdao"></property>
+	</bean>
+	<bean id="discussservice" class="org.service.imp.Discussservice">
+		<property name="dcd" ref="discussdao"></property>
+		<property name="rpd" ref="replydao"></property>
+	</bean>
+	
+	<!-- *************************************************************** -->
+	
+				<!-- ***Interceptor*** -->
+				
+	<bean id="myInterceptor" class="org.tool.MyInterceptor"></bean>
+	
+	<!-- *************************************************************** -->
+	
+				<!-- ***LOGIN*** -->
+				
+	<bean id="loginActoin" class="org.action.LoginAction">
+		<property name="ls" ref="loginservice"></property>
+		<property name="userinfo" ref="Table_Userinfo"></property>
+	</bean>
+	<!-- *************************************************************** -->
+				<!-- ***TABLE*** -->
+				
+	<bean id="Table_Problem" class="org.model.Problem"></bean>
+	<bean id="Table_Userinfo" class="org.model.Userinfo"></bean>
+	<bean id="Table_Reply" class="org.model.Reply"></bean>
+	<bean id="Table_Solution" class="org.model.Solution"></bean>
+	<bean id="Table_Discuss" class="org.model.Discuss"></bean>
+	
+				
+	<!-- *************************************************************** -->
+	
+				<!-- ***REGISTER*** -->
+				
+	<bean id="registerAction" class="org.action.RegisterAction">
+		<property name="rts" ref="registservice"></property>
+		<property name="usd" ref="userdao"></property>
+		<property name="userinfo" ref="Table_Userinfo"></property>
+	</bean>
+	
+	<!-- *************************************************************** -->
+	
+				<!-- ***SOLUTION*** -->
+				
+	<bean id="solutionAction" class="org.action.SolutionAction">
+		<property name="sts" ref="solutionservice"></property>
+	</bean>
+	
+	<!-- *************************************************************** -->
+	
+				<!-- ***SUBMIT*** -->
+				
+	<bean id="submitAction" class="org.action.SubmitAction">
+		<property name="sbs" ref="submitservice"></property>
+	</bean>
+	<bean id="resultthread" class="org.PojThread.imp.resultThread">
+	</bean>
+	<bean id="submitthread" class="org.PojThread.imp.submitThread">
+	</bean>
+	<bean id="mainthread" class="org.PojThread.imp.mainThread">
+		<property name="std" ref="solutiondao"></property>
+		<property name="result" ref="resultthread"></property>
+		<property name="submit" ref="submitthread"></property>
+	</bean>
+	<!-- *************************************************************** -->
+	
+				<!-- ***PROBLEMLIST*** -->
+				
+	<bean id="searchAction" class="org.action.SearchAction">
+		<property name="scs" ref="searchservice"></property>
+		<property name="problem" ref="Table_Problem"></property>
+	</bean>
+	<!-- *************************************************************** -->
+	
+				<!-- ****DISCUSS**** -->
+	<bean id="discussAction" class="org.action.DiscussAction">
+		<property name="dcs" ref="discussservice"></property>
+		<property name="discuss" ref="Table_Discuss"></property>
+		<property name="reply" ref="Table_Reply"></property>
+	</bean>
+</beans>
